@@ -8,68 +8,64 @@ namespace MacGuffinsRUs
 {
     class Program
     {
+        const string PhotoPath = "Base\\Photos\\";
+        const string CategoryPath = "Base\\Categories\\";
+
+        const string PhotosString = "Photos\\";
+        const string CategoryString = "Categories\\";
+
         static void Main(string[] args)
         {
-            //const string photoPath = "Photos/";
-            //const string categoryPath = "Categories/";
             var program = new Program();
 
             var index = Environment.CurrentDirectory.IndexOf("Code");
             var currentDirectory = Environment.CurrentDirectory.Substring(0, index);
-            var photoPath = Path.Combine(currentDirectory, @"Base\\Photos\\");
 
-            var files = Directory.GetFiles(photoPath);
+            //Get file directories.
+            var filephotoPath = Path.Combine(currentDirectory, @PhotoPath);
+            var dirFiles = Directory.GetFiles(filephotoPath);
 
-            var categoriesPath = Path.Combine(currentDirectory, @"Base\\Categories\\");
-
+            //Get directories for the Catagories.
+            var categoriesPath = Path.Combine(currentDirectory, @CategoryPath);
             var dirs = Directory.GetDirectories(categoriesPath);
 
-            foreach (var file in files)
+            if (Directory.Exists(filephotoPath) && Directory.Exists(categoriesPath))
             {
-                var hasFileMoved = false;
 
-                //Check for ProductNumber-Size-Color files
-                hasFileMoved = program.CheckProductNumberSizeColor(dirs, file);
+                foreach (var file in dirFiles)
+                {
+                    var hasFileMoved = false;
 
-                //Check for ProductNumber-Size files and Product-Color files
-                if (!hasFileMoved) hasFileMoved = program.CheckProductNumberSizeOrProductColor(dirs, file);
+                    //Check for ProductNumber-Size-Color files
+                    hasFileMoved = program.CheckSpecificMetada(dirs, file);
 
-                //Check for ProductNumbers
-                if (!hasFileMoved) program.CheckProductNumber(dirs, file);             
+                    //Check for ProductNumber-Size files and Product-Color files
+                    if (!hasFileMoved) hasFileMoved = program.CheckMetadaOneAndMetadaTwoOrMetadaThree(dirs, file);
+
+                    //Check for ProductNumbers
+                    if (!hasFileMoved) program.CheckMetadaOne(dirs, file);
+                }
             }
-
-            //if (Directory.Exists(photoPath) && Directory.Exists(categoryPath))
-            //{
-
-
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Cannot find Photos or Categories directory, please make sure the exe is in the same root as these folders.");
-            //    Console.ReadLine();
-            //}
-
+            else
+            {
+                Console.WriteLine("Cannot find Photos or Categories directory, please make sure the exe is in the same root as these folders.");
+                Console.ReadLine();
+            }
         }
 
-
-
         #region Helper functions
-     
-        public bool CheckProductNumberSizeColor(string[] dirs, string file)
+
+        public bool CheckSpecificMetada(string[] dirs, string file)
         {
-            var indexOfFile = file.IndexOf("Photos\\\\");
+            var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
-            fileNameJPG = fileNameJPG.Replace("Photos\\\\", "");
+            fileNameJPG = fileNameJPG.Replace(PhotosString, "");
             var fileName = fileNameJPG.Replace(".jpg", "");
 
             var hasFileMoved = false;
             foreach (var dir in dirs)
             {
-                var indexOfCat = dir.IndexOf("Categories\\\\");
-                var category = dir.Remove(0, indexOfCat);
-                category = category.Replace("Categories\\\\", "");
-
-                if (category.ToLower() == fileName.ToLower())
+                if (GetCategory(dir).ToLower() == fileName.ToLower())
                 {
                     var destFile = Path.Combine(dir, fileNameJPG);
                     File.Move(file, destFile);
@@ -81,11 +77,11 @@ namespace MacGuffinsRUs
             return hasFileMoved;
         }
 
-        public bool CheckProductNumberSizeOrProductColor(string[] dirs, string file)
+        public bool CheckMetadaOneAndMetadaTwoOrMetadaThree(string[] dirs, string file)
         {
-            var indexOfFile = file.IndexOf("Photos\\\\");
+            var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
-            fileNameJPG = fileNameJPG.Replace("Photos\\\\", "");
+            fileNameJPG = fileNameJPG.Replace(PhotosString, "");
             var fileName = fileNameJPG.Replace(".jpg", "");
 
             var hasFileMoved = false;
@@ -124,11 +120,11 @@ namespace MacGuffinsRUs
             return hasFileMoved;
         }
 
-        public void CheckProductNumber(string[] dirs, string file)
+        public void CheckMetadaOne(string[] dirs, string file)
         {
-            var indexOfFile = file.IndexOf("Photos\\\\");
+            var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
-            fileNameJPG = fileNameJPG.Replace("Photos\\\\", "");
+            fileNameJPG = fileNameJPG.Replace(PhotosString, "");
             var fileName = fileNameJPG.Replace(".jpg", "");
 
             foreach (var dir in dirs)
@@ -146,9 +142,9 @@ namespace MacGuffinsRUs
 
         public string GetCategory(string dir)
         {
-            var indexOfCat = dir.IndexOf("Categories\\\\");
+            var indexOfCat = dir.IndexOf(CategoryString);
             var category = dir.Remove(0, indexOfCat);
-            return category.Replace("Categories\\\\", "");
+            return category.Replace(CategoryString, "");
         }
 
         #endregion
