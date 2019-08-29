@@ -31,7 +31,6 @@ namespace MacGuffinsRUs
 
             if (Directory.Exists(filephotoPath) && Directory.Exists(categoriesPath))
             {
-
                 foreach (var file in dirFiles)
                 {
                     var hasFileMoved = false;
