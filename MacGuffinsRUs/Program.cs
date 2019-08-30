@@ -35,14 +35,14 @@ namespace MacGuffinsRUs
                 {
                     var hasFileMoved = false;
 
-                    //Check for ProductNumber-Size-Color files
-                    hasFileMoved = program.CheckSpecificMetada(dirs, file);
+                    //Check for Metadata 1 - Metadata 2 - Metadata 3 files
+                    hasFileMoved = program.CheckSpecificMetadata(dirs, file);
 
-                    //Check for ProductNumber-Size files and Product-Color files
-                    if (!hasFileMoved) hasFileMoved = program.CheckMetadaOneAndMetadaTwoOrMetadaThree(dirs, file);
+                    //Check for Metadata 1 - Metadata 2 files and Metadata 1 - Metadata 3 files
+                    if (!hasFileMoved) hasFileMoved = program.CheckMetadataOneAndMetadataTwoOrMetadataThree(dirs, file);
 
-                    //Check for ProductNumbers
-                    if (!hasFileMoved) program.CheckMetadaOne(dirs, file);
+                    //Check for Metadata 1
+                    if (!hasFileMoved) program.CheckMetadataOne(dirs, file);
                 }
             }
             else
@@ -54,7 +54,7 @@ namespace MacGuffinsRUs
 
         #region Helper functions
 
-        public bool CheckSpecificMetada(string[] dirs, string file)
+        public bool CheckSpecificMetadata(string[] dirs, string file)
         {
             var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
@@ -64,7 +64,7 @@ namespace MacGuffinsRUs
             var hasFileMoved = false;
             foreach (var dir in dirs)
             {
-                if (GetCategory(dir).ToLower() == fileName.ToLower())
+                if (GetCategory(dir).ToLower() == fileName.ToLower())  //Checks for a specific filename.
                 {
                     var destFile = Path.Combine(dir, fileNameJPG);
                     File.Move(file, destFile);
@@ -76,7 +76,7 @@ namespace MacGuffinsRUs
             return hasFileMoved;
         }
 
-        public bool CheckMetadaOneAndMetadaTwoOrMetadaThree(string[] dirs, string file)
+        public bool CheckMetadataOneAndMetadataTwoOrMetadataThree(string[] dirs, string file)
         {
             var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
@@ -90,7 +90,7 @@ namespace MacGuffinsRUs
 
                 var fileElements = fileName.Split('-');
 
-                if (fileElements.Length > 2)
+                if (fileElements.Length > 2) //Checks filenames with 3 or 4 elements.
                 {
                     if (fileElements[1].ToLower() == "x") fileElements[1] = fileElements[1] + "-" + fileElements[2];  //Accounts for x.
                     if (fileElements.Length > 3) fileElements[2] = fileElements[3];                                   //Accounts for a 4th element.
@@ -104,7 +104,7 @@ namespace MacGuffinsRUs
                         break;
                     }
                 }
-                else if (fileElements.Length == 2)
+                else if (fileElements.Length == 2) //Checks filenames with 2 elements.
                 {
                     if (category.ToLower() == (fileElements[0] + "-" + fileElements[1]).ToLower())
                     {
@@ -119,7 +119,7 @@ namespace MacGuffinsRUs
             return hasFileMoved;
         }
 
-        public void CheckMetadaOne(string[] dirs, string file)
+        public void CheckMetadataOne(string[] dirs, string file)
         {
             var indexOfFile = file.IndexOf(PhotosString);
             var fileNameJPG = file.Remove(0, indexOfFile);
@@ -130,7 +130,7 @@ namespace MacGuffinsRUs
             {
                 var fileElements = fileName.Split('-');
 
-                if (GetCategory(dir).ToLower() == fileElements[0].ToLower())
+                if (GetCategory(dir).ToLower() == fileElements[0].ToLower())  //Checks filename's first element.
                 {
                     var destFile = Path.Combine(dir, fileNameJPG);
                     File.Move(file, destFile);
