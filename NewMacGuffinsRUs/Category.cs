@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewMacGuffinsRUs
 {
-    class Category
+    public class Category
     {
         public string ProductCode { get; set; }
         public string Metadata { get; set; }

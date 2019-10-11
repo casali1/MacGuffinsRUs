@@ -5,11 +5,15 @@ using System.Text.RegularExpressions;
 
 namespace NewMacGuffinsRUs
 {
-    static class StringFuncs
+    public static class StringFuncs
     {
         // Split name into product number and other metadata
         public static string[] SplitName(string name)
         {
+            var result = name.Split(new[] { '-' }, 2);
+
+
+
             return name.Split(new[] { '-' }, 2);
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NewMacGuffinsRUs
 {
-    class Program
+    public class Program
     {
         const string PhotoPath = "Base\\Photos\\";
         const string CategoryPath = "Base\\Categories\\";
@@ -14,10 +14,8 @@ namespace NewMacGuffinsRUs
         const string PhotosString = "Photos\\";
         const string CategoryString = "Categories\\";
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            var program = new Program();
-
             var index = Environment.CurrentDirectory.IndexOf("Code");
             var currentDirectory = Environment.CurrentDirectory.Substring(0, index);
 
@@ -34,10 +32,16 @@ namespace NewMacGuffinsRUs
                 Dictionary<string, List<Category>> categories = GetCategories(categoriesPath);
 
                 // Get list of jpg photos and put them into the correct spot.
-                // Parallel foreach is used to speed up the process, and it should be safe since moving any individual photo
+                // Parallel foreach can be used to speed up the process and it should be safe since moving any individual photo
                 // does not interfere with moving other photos.
                 IEnumerable<string> photos = Directory.EnumerateFiles(filephotoPath, "*.jpg");
-                Parallel.ForEach(photos, (photo) => { MovePhoto(photo, categories); });
+
+                foreach(var photo in photos)
+                {
+                    MovePhoto(photo, categories);
+                }
+                //Parallel.ForEach(photos, (photo) => { MovePhoto(photo, categories); });
+
                 Console.WriteLine("Finished moving photos.");
                 Console.ReadLine();
             }
@@ -50,7 +54,7 @@ namespace NewMacGuffinsRUs
         }
 
         // Move a photo into the correct category folder
-        static void MovePhoto(string photoPath, Dictionary<string, List<Category>> categories)
+        public static void MovePhoto(string photoPath, Dictionary<string, List<Category>> categories)
         {
             string name = Path.GetFileNameWithoutExtension(photoPath);
             Category cat = FindCategory(name, categories);
@@ -59,7 +63,8 @@ namespace NewMacGuffinsRUs
                 Console.WriteLine($"NOTICE: Unable to find a category for {name}, please file manually.");
                 return;
             };
-            Directory.Move(photoPath, cat.Path + "/" + Path.GetFileName(photoPath));
+
+            //Directory.Move(photoPath, cat.Path + "/" + Path.GetFileName(photoPath));
 
             // Output that the file has been moved.
             // It might be a good idea to take this out if moving thousands of files
@@ -69,7 +74,7 @@ namespace NewMacGuffinsRUs
 
         // Create a dictionary to hold all of the categories, keyed by the product name
         // This is done to improve processing speed filtering down to correct product categories before checking metadata
-        static Dictionary<string, List<Category>> GetCategories(string path)
+        public static Dictionary<string, List<Category>> GetCategories(string path)
         {
             var comparer = StringComparer.OrdinalIgnoreCase; // make dictionary keys ignore case
             var categories = new Dictionary<string, List<Category>>(comparer);
@@ -89,7 +94,7 @@ namespace NewMacGuffinsRUs
         }
 
         // Return the best category for a given image
-        static Category FindCategory(string imageName, Dictionary<string, List<Category>> categories)
+        public static Category FindCategory(string imageName, Dictionary<string, List<Category>> categories)
         {
             var comparer = StringComparer.OrdinalIgnoreCase; // used to ignore case in comparisons
             string[] splitName = StringFuncs.SplitName(imageName);
